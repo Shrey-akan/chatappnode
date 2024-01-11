@@ -1,26 +1,33 @@
 const express = require("express");
-var http = require("http");
+const http = require("http");
 const app = express();
 const port = process.env.PORT || 4444;
-var server = http.createServer(app);
-var io = require("socket.io")(server);
+const server = http.createServer(app);
+const io = require("socket.io")(server);
 
-//middlewre
+// Middleware
 app.use(express.json());
-var clients = {};
+const clients = {};
 
 io.on("connection", (socket) => {
-  console.log("connetetd");
+  console.log("connected");
   console.log(socket.id, "has joined");
+
   socket.on("signin", (id) => {
     console.log(id);
     clients[id] = socket;
     console.log(clients);
   });
+
   socket.on("message", (msg) => {
-    console.log("msgggggg ", msg);
-    let targetId = msg.targetId;
-    if (clients[targetId]) clients[targetId].emit("message", msg);
+    try {
+      console.log("Received message:", msg);
+      const targetId = msg.targetId;
+      if (clients[targetId]) clients[targetId].emit("message", msg);
+    } catch (error) {
+      console.error("Error handling message:", error);
+      socket.emit("error", "Error handling the message");
+    }
   });
 });
 
