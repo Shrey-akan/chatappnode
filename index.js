@@ -18,7 +18,7 @@ io.on("connection", (socket) => {
     console.log(clients);
   });
   socket.on("message", (msg) => {
-    console.log(msg);
+    console.log("msgggggg ", msg);
     let targetId = msg.targetId;
     if (clients[targetId]) clients[targetId].emit("message", msg);
   });
